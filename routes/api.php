@@ -14,10 +14,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 Route::apiResources([
     'task' => App\Http\Controllers\Api\TaskController::class,
     'project' => App\Http\Controllers\Api\ProjectController::class,
 ]);
+
+Route::get('task_list/{id}','App\Http\Controllers\Api\TaskController@taskList');
+Route::post('add_tasks','App\Http\Controllers\Api\ProjectController@addTask');

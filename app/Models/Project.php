@@ -11,11 +11,11 @@ class Project extends Model
     use HasFactory,SoftDeletes;
 
     protected $fillable = [
-        'name_name',
+        'project_name',
         'task_id',
     ];
 
     public function task(){
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'project_task');
     }
 }

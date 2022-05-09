@@ -22942,57 +22942,83 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       editMode: false,
+      demo_tasks: [],
       tasks: {},
+      projects: {},
+      project_id: '',
       formErr: '',
       form: new Form({
         id: "",
-        task_name: "",
-        task_start: "",
-        task_due: "",
-        task_done: "",
-        task_status: ""
+        project_name: ""
       })
     };
   },
   methods: {
-    loadTask: function loadTask() {
+    loadProject: function loadProject() {
       var _this = this;
 
-      axios.get("api/task").then(function (_ref) {
+      axios.get("api/project").then(function (_ref) {
         var data = _ref.data;
-        return _this.tasks = data.data;
+        return _this.projects = data.data;
       });
     },
-    addTask: function addTask() {
+    addProject: function addProject() {
       this.editMode = false;
       this.form.reset();
-      $("#addNewTask").modal("show");
+      $("#addNewProject").modal("show");
     },
-    editTask: function editTask(task) {
-      this.editMode = true;
-      this.form.reset();
-      $("#addNewTask").modal("show");
-      this.form.fill(task);
-    },
-    createTask: function createTask() {
+    addTask: function addTask(project) {
       var _this2 = this;
 
-      this.form.post("api/task").then(function (data) {
-        _this2.tasks = data.data.data;
-        $("#addNewTask").modal("hide");
+      axios.get("api/task_list/" + project.id).then(function (_ref2) {
+        var data = _ref2.data;
+        return _this2.tasks = data.data;
+      });
+      this.editMode = false;
+      this.project_id = project.id;
+      this.form.reset();
+      $("#addProjectTask").modal("show");
+    },
+    addTaskToProject: function addTaskToProject(task) {
+      this.demo_tasks.push(task);
+      var i = this.tasks.map(function (item) {
+        return item.id;
+      }).indexOf(task.id); // find index of object
+
+      this.tasks.splice(i, 1); // remove it from array
+
+      this.editMode = false;
+      this.form.reset();
+      $("#addProjectTask").modal("show");
+    },
+    editProject: function editProject(project) {
+      this.editMode = true;
+      this.form.reset();
+      $("#addNewProject").modal("show");
+      this.form.fill(project);
+    },
+    createProject: function createProject() {
+      var _this3 = this;
+
+      this.form.post("api/project").then(function (data) {
+        _this3.projects = data.data.data;
+        $("#addNewProject").modal("hide");
         $("body").removeClass("modal-open");
         $(".modal-backdrop").remove();
       })["catch"](function () {});
     },
-    updateTask: function updateTask() {
-      var _this3 = this;
+    createProjectTask: function createProjectTask(project_id) {
+      var _this4 = this;
 
-      this.form.put("api/task/" + this.form.id).then(function (data) {
+      axios.post("api/add_tasks", {
+        id: project_id,
+        data: this.demo_tasks
+      }).then(function (data) {
         if (data.data.status == 500) {
-          _this3.formErr = data.data.error;
+          _this4.formErr = data.data.error;
         } else {
-          _this3.tasks = data.data.data;
-          $("#addNewTask").modal("hide");
+          _this4.projects = data.data.data;
+          $("#addProjectTask").modal("hide");
           $("body").removeClass("modal-open");
           $(".modal-backdrop").remove();
         }
@@ -23000,22 +23026,23 @@ __webpack_require__.r(__webpack_exports__);
         console.log(errors);
       });
     },
-    deleteTask: function deleteTask(id) {
-      var _this4 = this;
+    deleteProject: function deleteProject(id) {
+      var _this5 = this;
 
-      this.form["delete"]("api/task/" + id).then(function (data) {
-        _this4.tasks = data.data.data;
+      this.form["delete"]("api/project/" + id).then(function (data) {
+        _this5.projects = data.data.data;
       });
     },
     closeModal: function closeModal() {
       this.form.reset();
-      $("#addNewTask").modal("hide");
+      $("#addNewProject").modal("hide");
+      $("#addProjectTask").modal("hide");
       $("body").removeClass("modal-open");
       $(".modal-backdrop").remove();
     }
   },
   created: function created() {
-    this.loadTask();
+    this.loadProject();
   }
 });
 
@@ -23184,115 +23211,152 @@ var _hoisted_8 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementV
 /* HOISTED */
 );
 
-var _hoisted_9 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+var _hoisted_9 = ["onClick"];
+
+var _hoisted_10 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  "class": "fa fa-calendar-plus"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_11 = [_hoisted_10];
+
+var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" / ");
+
+var _hoisted_13 = ["onClick"];
+
+var _hoisted_14 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  "class": "fa fa-list"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_15 = [_hoisted_14];
+
+var _hoisted_16 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" / ");
+
+var _hoisted_17 = ["onClick"];
+
+var _hoisted_18 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
   "class": "fa fa-edit"
 }, null, -1
 /* HOISTED */
 );
 
-var _hoisted_10 = [_hoisted_9];
+var _hoisted_19 = [_hoisted_18];
 
-var _hoisted_11 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" / ");
+var _hoisted_20 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createTextVNode)(" / ");
 
-var _hoisted_12 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+var _hoisted_21 = ["onClick"];
+
+var _hoisted_22 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
   "class": "fa fa-trash"
 }, null, -1
 /* HOISTED */
 );
 
-var _hoisted_13 = [_hoisted_12];
-var _hoisted_14 = {
-  id: "addNewTask",
+var _hoisted_23 = [_hoisted_22];
+var _hoisted_24 = {
+  id: "addNewProject",
   "class": "modal fade",
   "aria-hidden": "true",
-  "aria-labelledby": "addNewTaskLable"
+  "aria-labelledby": "addNewProjectLable"
 };
-var _hoisted_15 = {
+var _hoisted_25 = {
   "class": "modal-dialog"
 };
-var _hoisted_16 = {
+var _hoisted_26 = {
   "class": "modal-content"
 };
-var _hoisted_17 = {
+var _hoisted_27 = {
   "class": "modal-header"
 };
-var _hoisted_18 = {
+var _hoisted_28 = {
   "class": "modal-title"
 };
-var _hoisted_19 = {
+var _hoisted_29 = {
   "class": "modal-title"
 };
-var _hoisted_20 = {
+var _hoisted_30 = {
   "class": "modal-body"
 };
-var _hoisted_21 = ["innerHTML"];
-var _hoisted_22 = {
+var _hoisted_31 = ["innerHTML"];
+var _hoisted_32 = {
   "class": "form-group"
 };
-var _hoisted_23 = ["innerHTML"];
-var _hoisted_24 = {
-  "class": "form-group"
-};
-
-var _hoisted_25 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "for": "task_start"
-}, "Task Start Date", -1
-/* HOISTED */
-);
-
-var _hoisted_26 = ["innerHTML"];
-var _hoisted_27 = {
-  "class": "form-group"
-};
-
-var _hoisted_28 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("label", {
-  "for": "task_start"
-}, "Task Due Date", -1
-/* HOISTED */
-);
-
-var _hoisted_29 = ["innerHTML"];
-var _hoisted_30 = {
-  "class": "form-group"
-};
-
-var _hoisted_31 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-  value: ""
-}, "Select Status", -1
-/* HOISTED */
-);
-
-var _hoisted_32 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-  value: "0"
-}, "ToDo", -1
-/* HOISTED */
-);
-
-var _hoisted_33 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("option", {
-  value: "1"
-}, "Done", -1
-/* HOISTED */
-);
-
-var _hoisted_34 = [_hoisted_31, _hoisted_32, _hoisted_33];
-var _hoisted_35 = ["innerHTML"];
-var _hoisted_36 = {
+var _hoisted_33 = ["innerHTML"];
+var _hoisted_34 = {
   "class": "modal-footer"
 };
 
-var _hoisted_37 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+var _hoisted_35 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
   type: "reset",
   "class": "btn btn-inverse"
 }, "Clear", -1
 /* HOISTED */
 );
 
-var _hoisted_38 = {
+var _hoisted_36 = {
   type: "submit",
   id: "update_btn",
   "class": "btn btn-inverse"
 };
+var _hoisted_37 = {
+  type: "submit",
+  id: "submit_btn",
+  "class": "btn btn-inverse"
+};
+var _hoisted_38 = {
+  id: "addProjectTask",
+  "class": "modal fade",
+  "aria-hidden": "true",
+  "aria-labelledby": "addProjectTaskLable"
+};
 var _hoisted_39 = {
+  "class": "modal-dialog"
+};
+var _hoisted_40 = {
+  "class": "modal-content"
+};
+var _hoisted_41 = {
+  "class": "modal-header"
+};
+var _hoisted_42 = {
+  "class": "modal-title"
+};
+var _hoisted_43 = {
+  "class": "modal-title"
+};
+var _hoisted_44 = {
+  "class": "modal-body"
+};
+var _hoisted_45 = ["innerHTML"];
+var _hoisted_46 = {
+  "class": "table table-hover mb-0"
+};
+
+var _hoisted_47 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("thead", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tr", null, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "#"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Task Name"), /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("th", null, "Action")])], -1
+/* HOISTED */
+);
+
+var _hoisted_48 = ["onClick"];
+
+var _hoisted_49 = /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("i", {
+  "class": "fa fa-plus"
+}, null, -1
+/* HOISTED */
+);
+
+var _hoisted_50 = [_hoisted_49];
+var _hoisted_51 = {
+  "class": "modal-footer"
+};
+var _hoisted_52 = {
+  type: "submit",
+  id: "update_btn",
+  "class": "btn btn-inverse"
+};
+var _hoisted_53 = {
   type: "submit",
   id: "submit_btn",
   "class": "btn btn-inverse"
@@ -23307,9 +23371,9 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       "margin-top": "-43px"
     },
     onClick: _cache[0] || (_cache[0] = function () {
-      return _ctx.addProject && _ctx.addProject.apply(_ctx, arguments);
+      return $options.addProject && $options.addProject.apply($options, arguments);
     })
-  }, " + ")])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_7, [_hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)(_ctx.projects, function (project) {
+  }, " + ")])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_7, [_hoisted_8, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.projects, function (project) {
     return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
       key: project.id
     }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(project.id), 1
@@ -23319,35 +23383,55 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       type: "button",
       href: "",
-      onClick: _cache[1] || (_cache[1] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
-        return $options.editTask(_ctx.task);
-      }, ["prevent"]))
-    }, _hoisted_10), _hoisted_11, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+        return $options.addTask(project);
+      }, ["prevent"])
+    }, _hoisted_11, 8
+    /* PROPS */
+    , _hoisted_9), _hoisted_12, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
       type: "button",
       href: "",
-      onClick: _cache[2] || (_cache[2] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
-        return $options.deleteTask(_ctx.task.id);
-      }, ["prevent"]))
-    }, _hoisted_13)])]);
+      onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+        return $options.addTask(project);
+      }, ["prevent"])
+    }, _hoisted_15, 8
+    /* PROPS */
+    , _hoisted_13), _hoisted_16, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      type: "button",
+      href: "",
+      onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+        return $options.editProject(project);
+      }, ["prevent"])
+    }, _hoisted_19, 8
+    /* PROPS */
+    , _hoisted_17), _hoisted_20, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      type: "button",
+      href: "",
+      onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+        return $options.deleteProject(project.id);
+      }, ["prevent"])
+    }, _hoisted_23, 8
+    /* PROPS */
+    , _hoisted_21)])]);
   }), 128
   /* KEYED_FRAGMENT */
-  ))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_14, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_15, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_16, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_17, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_18, "Add New Task", 512
+  ))])])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_25, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_26, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_28, "Add New Project", 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !$data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_19, "Update Task", 512
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !$data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_29, "Update Project", 512
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
     type: "button",
     "class": "close",
     "data-dismiss": "modal",
     "aria-hidden": "true",
-    onClick: _cache[3] || (_cache[3] = function () {
+    onClick: _cache[1] || (_cache[1] = function () {
       return $options.closeModal && $options.closeModal.apply($options, arguments);
     })
   }, " × ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
-    onSubmit: _cache[8] || (_cache[8] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
-      return $data.editMode ? $options.updateTask() : $options.createTask();
+    onSubmit: _cache[3] || (_cache[3] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return $data.editMode ? _ctx.updateProject() : $options.createProject();
     }, ["prevent"]))
-  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_20, [$data.formErr != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [$data.formErr != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
     innerHTML: $data.formErr,
     style: {
@@ -23355,112 +23439,82 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
     }
   }, null, 8
   /* PROPS */
-  , _hoisted_21)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_22, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[4] || (_cache[4] = function ($event) {
-      return $data.form.task_name = $event;
+  , _hoisted_31)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_32, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
+    "onUpdate:modelValue": _cache[2] || (_cache[2] = function ($event) {
+      return $data.form.project_name = $event;
     }),
     type: "text",
-    name: "task_name",
-    placeholder: "Task Name",
+    name: "project_name",
+    placeholder: "Project Name",
     "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["form-control", {
-      'is-invalid': $data.form.errors.has('task_name')
+      'is-invalid': $data.form.errors.has('project_name')
     }])
   }, null, 2
   /* CLASS */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.task_name]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_has_error, {
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.project_name]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_has_error, {
     form: $data.form,
-    field: "task_name"
+    field: "project_name"
   }, null, 8
   /* PROPS */
-  , ["form"]), $data.form.errors.has('task_name') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+  , ["form"]), $data.form.errors.has('project_name') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
     key: 0,
-    innerHTML: $data.form.errors.get('task_name'),
+    innerHTML: $data.form.errors.get('project_name'),
     style: {
       "color": "#db3535"
     }
   }, null, 8
   /* PROPS */
-  , _hoisted_23)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_24, [_hoisted_25, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[5] || (_cache[5] = function ($event) {
-      return $data.form.task_start = $event;
-    }),
-    type: "date",
-    id: "task_start",
-    name: "task_start",
-    placeholder: "Start Date",
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["form-control", {
-      'is-invalid': $data.form.errors.has('task_start')
-    }])
-  }, null, 2
-  /* CLASS */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.task_start]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_has_error, {
-    form: $data.form,
-    field: "task_start"
-  }, null, 8
-  /* PROPS */
-  , ["form"]), $data.form.errors.has('task_start') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-    key: 0,
-    innerHTML: $data.form.errors.get('task_start'),
-    style: {
-      "color": "#db3535"
-    }
-  }, null, 8
-  /* PROPS */
-  , _hoisted_26)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_27, [_hoisted_28, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
-    "onUpdate:modelValue": _cache[6] || (_cache[6] = function ($event) {
-      return $data.form.task_due = $event;
-    }),
-    type: "date",
-    id: "task_start",
-    name: "task_due",
-    placeholder: "Due Date",
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["form-control", {
-      'is-invalid': $data.form.errors.has('task_due')
-    }])
-  }, null, 2
-  /* CLASS */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelText, $data.form.task_due]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_has_error, {
-    form: $data.form,
-    field: "task_due"
-  }, null, 8
-  /* PROPS */
-  , ["form"]), $data.form.errors.has('task_due') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-    key: 0,
-    innerHTML: $data.form.errors.get('task_due'),
-    style: {
-      "color": "#db3535"
-    }
-  }, null, 8
-  /* PROPS */
-  , _hoisted_29)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_30, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("select", {
-    "onUpdate:modelValue": _cache[7] || (_cache[7] = function ($event) {
-      return $data.form.task_status = $event;
-    }),
-    type: "text",
-    name: "task_status",
-    "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["form-control", {
-      'is-invalid': $data.form.errors.has('task_status')
-    }])
-  }, _hoisted_34, 2
-  /* CLASS */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vModelSelect, $data.form.task_status]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createVNode)(_component_has_error, {
-    form: $data.form,
-    field: "task_status"
-  }, null, 8
-  /* PROPS */
-  , ["form"]), $data.form.errors.has('task_status') ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
-    key: 0,
-    innerHTML: $data.form.errors.get('task_status'),
-    style: {
-      "color": "#db3535"
-    }
-  }, null, 8
-  /* PROPS */
-  , _hoisted_35)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)], 512
+  , _hoisted_33)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true)])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_34, [_hoisted_35, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_36, " Update ", 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_36, [_hoisted_37, (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_38, " Update ", 512
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_37, " Save ", 512
   /* NEED_PATCH */
-  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_39, " Save ", 512
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !$data.editMode]])])], 32
+  /* HYDRATE_EVENTS */
+  )])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_38, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_39, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)(" Modal content"), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_40, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_41, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_42, "Add New Task To Project", 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !$data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("h4", _hoisted_43, "Update Project Tasks", 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", {
+    type: "button",
+    "class": "close",
+    "data-dismiss": "modal",
+    "aria-hidden": "true",
+    onClick: _cache[4] || (_cache[4] = function () {
+      return $options.closeModal && $options.closeModal.apply($options, arguments);
+    })
+  }, " × ")]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("form", {
+    onSubmit: _cache[5] || (_cache[5] = (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+      return $data.editMode ? _ctx.updateProjectTask() : $options.createProjectTask($data.project_id);
+    }, ["prevent"]))
+  }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_44, [$data.formErr != '' ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", {
+    key: 0,
+    innerHTML: $data.formErr,
+    style: {
+      "color": "#db3535"
+    }
+  }, null, 8
+  /* PROPS */
+  , _hoisted_45)) : (0,vue__WEBPACK_IMPORTED_MODULE_0__.createCommentVNode)("v-if", true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("table", _hoisted_46, [_hoisted_47, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("tbody", null, [((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(true), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.renderList)($data.tasks, function (task) {
+    return (0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("tr", {
+      key: task.id
+    }, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(task.id), 1
+    /* TEXT */
+    ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(task.task_name), 1
+    /* TEXT */
+    ), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("td", null, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("a", {
+      type: "button",
+      href: "",
+      onClick: (0,vue__WEBPACK_IMPORTED_MODULE_0__.withModifiers)(function ($event) {
+        return $options.addTaskToProject(task);
+      }, ["prevent"])
+    }, _hoisted_50, 8
+    /* PROPS */
+    , _hoisted_48)])]);
+  }), 128
+  /* KEYED_FRAGMENT */
+  ))])])]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_51, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_52, " Update ", 512
+  /* NEED_PATCH */
+  ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, $data.editMode]]), (0,vue__WEBPACK_IMPORTED_MODULE_0__.withDirectives)((0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("button", _hoisted_53, " Save ", 512
   /* NEED_PATCH */
   ), [[vue__WEBPACK_IMPORTED_MODULE_0__.vShow, !$data.editMode]])])], 32
   /* HYDRATE_EVENTS */

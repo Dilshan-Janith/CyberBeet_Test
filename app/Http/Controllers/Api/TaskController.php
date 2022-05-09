@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use App\Models\ProjectTask;
 
 class TaskController extends Controller
 {
@@ -117,5 +118,13 @@ class TaskController extends Controller
         Task::find($id)->delete();
         
         return Task::latest()->paginate(20);
+    }
+
+    public function taskList($id){
+
+        $task_list = ProjectTask::whereProjectId($id)->pluck('task_id');
+        $task = Task::whereNotIn('id', $task_list)->latest()->paginate(20);
+
+        return $task;
     }
 }
